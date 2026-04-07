@@ -8,11 +8,14 @@ import androidx.compose.ui.Modifier
 import com.kotlincrossplatform.nutrivox.data.remote.ApiClient
 import com.kotlincrossplatform.nutrivox.data.remote.TokenStorage
 import com.kotlincrossplatform.nutrivox.data.repository.AuthRepository
+import com.kotlincrossplatform.nutrivox.data.repository.PlanRepository
 import com.kotlincrossplatform.nutrivox.navigation.*
 import com.kotlincrossplatform.nutrivox.theme.NutrivoxTheme
 import com.kotlincrossplatform.nutrivox.ui.auth.AuthViewModel
 import com.kotlincrossplatform.nutrivox.ui.auth.LoginScreen
 import com.kotlincrossplatform.nutrivox.ui.auth.OnboardingScreen
+import com.kotlincrossplatform.nutrivox.ui.patient.home.PatientHomeScreen
+import com.kotlincrossplatform.nutrivox.ui.patient.home.PatientHomeViewModel
 
 @Composable
 fun App() {
@@ -47,9 +50,17 @@ fun App() {
                     )
                 }
                 is Screen.PatientHome -> {
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text("Patient Home — TODO")
-                    }
+                    val planRepository = remember { PlanRepository(apiClient) }
+                    val viewModel = remember { PatientHomeViewModel(planRepository) }
+                    PatientHomeScreen(
+                        viewModel = viewModel,
+                        onMealClick = { mealId ->
+                            // TODO: navigate to meal detail with meal data
+                        },
+                        onRegisterConsumption = {
+                            // TODO: navigate to consumption registration
+                        }
+                    )
                 }
                 is Screen.Dashboard -> {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
