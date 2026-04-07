@@ -8,7 +8,9 @@
       "Bash(uv run python -c ':*)",
       "mcp__plugin_figma_figma__get_screenshot",
       "Bash(./gradlew :server:compileKotlin)",
-      "Bash(./gradlew server:build --no-daemon -x test)"
+      "Bash(./gradlew server:build --no-daemon -x test)",
+      "Bash(./gradlew :shared:compileKotlinJvm)",
+      "Bash(./gradlew :composeApp:compileKotlinJvm)"
     ]
   }
 }
