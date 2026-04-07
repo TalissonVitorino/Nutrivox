@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(wc:*)",
+      "mcp__plugin_figma_figma__get_metadata",
+      "Bash(uv run python -c ':*)",
+      "mcp__plugin_figma_figma__get_screenshot"
+    ]
+  }
+}

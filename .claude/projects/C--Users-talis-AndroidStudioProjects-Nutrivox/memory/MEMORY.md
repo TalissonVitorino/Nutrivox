@@ -1,0 +1,5 @@
+- [Nutrivox Project](project_nutrivox.md) — App de nutrição clínica: nutricionista cria planos, paciente visualiza/registra, IA assistiva
+- [User Profile](user_profile.md) — Desenvolvedor Android/KMP, criterioso com qualidade de produto e domínio clínico
+- [Process](process_design_first.md) — Fluxo: revisão de requisitos > design de produto > UI em ferramenta externa > Figma > implementação
+- [Product Decisions](decisions_product.md) — Decisões fechadas: hierarquia plano>variação>refeição, IA sem fitoterápicos, metas no MVP, onboarding por convite
+- [UV for Python](feedback_uv_python.md) — Always use `uv run python`, never bare python
