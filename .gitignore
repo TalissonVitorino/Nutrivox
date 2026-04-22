@@ -17,3 +17,9 @@ captures
 !*.xcworkspace/contents.xcworkspacedata
 **/xcshareddata/WorkspaceSettings.xcsettings
 node_modules/
+
+# Environment files (keep .env.example committed)
+.env
+.env.local
+.env.staging
+.env.production

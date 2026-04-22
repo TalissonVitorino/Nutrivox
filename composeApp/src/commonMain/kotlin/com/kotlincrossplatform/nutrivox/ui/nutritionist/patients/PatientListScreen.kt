@@ -40,7 +40,6 @@ fun PatientListScreen(
         }
     ) { paddingValues ->
         Column(modifier = modifier.fillMaxSize().padding(paddingValues).padding(16.dp)) {
-            Text("Lista de Pacientes", style = MaterialTheme.typography.headlineMedium)
             Text("Gerencie seus ${patients.size} pacientes ativos", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
             Spacer(Modifier.height(16.dp))
@@ -74,7 +73,7 @@ private fun PatientCard(patient: PatientListItem, onClick: () -> Unit) {
         else -> Neutral
     }
 
-    Card(onClick = onClick, modifier = Modifier.fillMaxWidth()) {
+    Card(onClick = onClick, modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                 Row(verticalAlignment = Alignment.CenterVertically) {

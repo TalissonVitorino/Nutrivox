@@ -1,38 +1,25 @@
 package com.kotlincrossplatform.nutrivox.navigation
 
 import androidx.compose.runtime.*
-
-sealed class Screen {
-    // Auth
-    data object Login : Screen()
-    data class Onboarding(val inviteCode: String) : Screen()
-
-    // Patient
-    data object PatientHome : Screen()
-    data class PlanDetail(val variationId: String? = null) : Screen()
-    data class Consumption(val mealId: String) : Screen()
-    data object Progress : Screen()
-    data object PatientChat : Screen()
-    data object PatientProfile : Screen()
-
-    // Nutritionist
-    data object Dashboard : Screen()
-    data object PatientList : Screen()
-    data class PatientDetail(val patientId: String) : Screen()
-    data class PlanEditor(val patientId: String, val planId: String? = null) : Screen()
-    data class PlanPreview(val planId: String) : Screen()
-    data class NutriChat(val patientId: String) : Screen()
-    data object Settings : Screen()
-    data class Assessment(val patientId: String) : Screen()
-}
+import com.kotlincrossplatform.nutrivox.data.remote.TokenStorage
 
 class NavigationState {
-    var currentScreen by mutableStateOf<Screen>(Screen.Login)
+    var currentScreen by mutableStateOf<Screen>(resolveInitialScreen())
         private set
+
+    private companion object {
+        fun resolveInitialScreen(): Screen = when {
+            !TokenStorage.isLoggedIn -> Screen.Login
+            TokenStorage.isNutritionist -> Screen.Dashboard
+            else -> Screen.PatientHome
+        }
+    }
 
     private val backStack = mutableListOf<Screen>()
 
     fun navigateTo(screen: Screen) {
+        // Prevent duplicate pushes
+        if (currentScreen == screen) return
         backStack.add(currentScreen)
         currentScreen = screen
     }
@@ -47,6 +34,17 @@ class NavigationState {
         backStack.clear()
         currentScreen = screen
     }
+
+    /** Navigate to a root tab (clears stack to the tab's root) */
+    fun switchTab(screen: Screen) {
+        // If already on this screen, do nothing
+        if (currentScreen == screen) return
+        // Clear any detail screens from the stack and go to root tab
+        backStack.clear()
+        currentScreen = screen
+    }
+
+    val canGoBack: Boolean get() = backStack.isNotEmpty()
 }
 
 @Composable

@@ -10,7 +10,14 @@ import kotlinx.serialization.Serializable
 data class LoginRequest(val email: String, val password: String)
 
 @Serializable
-data class RegisterRequest(val email: String, val password: String, val fullName: String, val role: String)
+data class RegisterRequest(
+    val email: String,
+    val password: String,
+    val fullName: String,
+    val role: String,
+    val phone: String? = null,
+    val professionalRegistration: String? = null
+)
 
 @Serializable
 data class TokenResponse(val accessToken: String, val refreshToken: String)
@@ -27,7 +34,6 @@ class AuthRepository(private val apiClient: ApiClient) {
             }.body<ApiWrapper<TokenResponse>>()
 
             if (response.success && response.data != null) {
-                // Decode JWT to get role and userId (simple base64 decode of payload)
                 val payload = decodeJwtPayload(response.data.accessToken)
                 TokenStorage.saveTokens(
                     access = response.data.accessToken,
@@ -37,28 +43,96 @@ class AuthRepository(private val apiClient: ApiClient) {
                 )
                 Result.success(Unit)
             } else {
-                Result.failure(Exception(response.error ?: "Login failed"))
+                Result.failure(Exception(translateError(response.error)))
             }
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(Exception(classifyNetworkError(e)))
         }
     }
 
-    suspend fun register(email: String, password: String, fullName: String, role: String): Result<Unit> {
+    suspend fun register(
+        email: String,
+        password: String,
+        fullName: String,
+        role: String,
+        phone: String? = null,
+        professionalRegistration: String? = null
+    ): Result<Unit> {
         return try {
             val response = apiClient.httpClient.post("/auth/register") {
-                setBody(RegisterRequest(email, password, fullName, role))
+                setBody(RegisterRequest(email, password, fullName, role, phone, professionalRegistration))
             }.body<ApiWrapper<Map<String, String>>>()
 
             if (response.success) Result.success(Unit)
-            else Result.failure(Exception(response.error ?: "Registration failed"))
+            else Result.failure(Exception(translateError(response.error)))
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(Exception(classifyNetworkError(e)))
+        }
+    }
+
+    suspend fun forgotPassword(email: String): Result<Unit> {
+        return try {
+            val response = apiClient.httpClient.post("/auth/forgot-password") {
+                setBody(mapOf("email" to email))
+            }.body<ApiWrapper<String>>()
+
+            if (response.success) Result.success(Unit)
+            else Result.failure(Exception(translateError(response.error)))
+        } catch (e: Exception) {
+            Result.failure(Exception("Sem conexão com o servidor. Verifique sua internet."))
+        }
+    }
+
+    suspend fun resetPassword(email: String, code: String, newPassword: String): Result<Unit> {
+        return try {
+            val response = apiClient.httpClient.post("/auth/reset-password") {
+                setBody(mapOf("email" to email, "code" to code, "newPassword" to newPassword))
+            }.body<ApiWrapper<String>>()
+
+            if (response.success) Result.success(Unit)
+            else Result.failure(Exception(translateError(response.error)))
+        } catch (e: Exception) {
+            val message = when {
+                e.message?.contains("Invalid reset code") == true -> "Código inválido"
+                e.message?.contains("Reset code expired") == true -> "Código expirado. Solicite um novo."
+                else -> translateError(e.message)
+            }
+            Result.failure(Exception(message))
         }
     }
 
     fun logout() {
         TokenStorage.clear()
+    }
+
+    private fun classifyNetworkError(e: Exception): String {
+        val msg = e.message ?: return "Erro desconhecido: ${e::class.simpleName}"
+        return when {
+            msg.contains("Connection refused", ignoreCase = true) ->
+                "Servidor não encontrado. Verifique se o backend está rodando na porta 8080."
+            msg.contains("Unable to resolve host", ignoreCase = true) ->
+                "Sem conexão com a internet."
+            msg.contains("timeout", ignoreCase = true) ->
+                "Tempo de conexão esgotado."
+            msg.contains("Connect timed out", ignoreCase = true) ->
+                "Servidor não respondeu a tempo."
+            else -> "Erro: $msg"
+        }
+    }
+
+    private fun translateError(error: String?): String = when {
+        error == null -> "Erro desconhecido"
+        error.contains("Invalid credentials", ignoreCase = true) -> "E-mail ou senha incorretos"
+        error.contains("Account is deactivated", ignoreCase = true) -> "Conta desativada. Entre em contato com o suporte."
+        error.contains("Email already registered", ignoreCase = true) -> "Este e-mail já está cadastrado"
+        error.contains("Invalid email", ignoreCase = true) -> "Formato de e-mail inválido"
+        error.contains("Password must be", ignoreCase = true) -> "A senha deve ter pelo menos 8 caracteres"
+        error.contains("Full name is required", ignoreCase = true) -> "Nome completo é obrigatório"
+        error.contains("Invalid role", ignoreCase = true) -> "Tipo de conta inválido"
+        error.contains("Invalid reset code", ignoreCase = true) -> "Código de recuperação inválido"
+        error.contains("Reset code expired", ignoreCase = true) -> "Código expirado. Solicite um novo."
+        error.contains("User not found", ignoreCase = true) -> "Usuário não encontrado"
+        else -> error
     }
 
     private fun decodeJwtPayload(jwt: String): Map<String, String> {

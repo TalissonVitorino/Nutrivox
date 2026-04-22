@@ -32,23 +32,17 @@ fun PatientChatScreen(
     ))}
 
     Column(modifier = modifier.fillMaxSize()) {
-        // Header
-        Surface(color = MaterialTheme.colorScheme.surface, shadowElevation = 2.dp) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text("Chat", style = MaterialTheme.typography.headlineMedium)
-                Spacer(Modifier.height(12.dp))
-                @Suppress("DEPRECATION")
-                TabRow(selectedTabIndex = selectedTab) {
-                    tabs.forEachIndexed { index, title ->
-                        Tab(
-                            selected = selectedTab == index,
-                            onClick = { selectedTab = index },
-                            text = {
-                                if (index == 1) Text("\u2728 $title") else Text(title)
-                            }
-                        )
+        // Tab selector
+        @Suppress("DEPRECATION")
+        TabRow(selectedTabIndex = selectedTab) {
+            tabs.forEachIndexed { index, title ->
+                Tab(
+                    selected = selectedTab == index,
+                    onClick = { selectedTab = index },
+                    text = {
+                        if (index == 1) Text("\u2728 $title") else Text(title)
                     }
-                }
+                )
             }
         }
 

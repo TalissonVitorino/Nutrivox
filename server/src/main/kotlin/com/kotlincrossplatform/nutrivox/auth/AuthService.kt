@@ -5,6 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm
 import com.kotlincrossplatform.nutrivox.common.Exceptions.ConflictException
 import com.kotlincrossplatform.nutrivox.common.Exceptions.ForbiddenException
 import com.kotlincrossplatform.nutrivox.common.Exceptions.UnauthorizedException
+import com.kotlincrossplatform.nutrivox.users.PasswordResetTable
 import com.kotlincrossplatform.nutrivox.users.RefreshTokenTable
 import com.kotlincrossplatform.nutrivox.users.UserTable
 import org.jetbrains.exposed.sql.*
@@ -44,6 +45,20 @@ data class LoginRequest(
 class AuthService(private val jwtConfig: JwtConfig) {
 
     fun register(request: RegisterRequest): UUID = transaction {
+        // Validate input
+        if (request.email.isBlank() || !request.email.contains("@")) {
+            throw IllegalArgumentException("Invalid email format")
+        }
+        if (request.password.length < 8) {
+            throw IllegalArgumentException("Password must be at least 8 characters")
+        }
+        if (request.fullName.isBlank()) {
+            throw IllegalArgumentException("Full name is required")
+        }
+        if (request.role !in listOf("nutritionist", "patient", "admin")) {
+            throw IllegalArgumentException("Invalid role: ${request.role}")
+        }
+
         val existingUser = UserTable
             .selectAll()
             .where { UserTable.email eq request.email }
@@ -119,6 +134,67 @@ class AuthService(private val jwtConfig: JwtConfig) {
     }
 
     fun logout(userId: UUID): Unit = transaction {
+        RefreshTokenTable.deleteWhere { RefreshTokenTable.userId eq userId }
+    }
+
+    fun requestPasswordReset(email: String): String? = transaction {
+        val user = UserTable
+            .selectAll()
+            .where { UserTable.email eq email }
+            .firstOrNull() ?: return@transaction null
+
+        val userId = user[UserTable.id]
+        val code = (100000..999999).random().toString()
+        val expiresAt = OffsetDateTime.now(ZoneOffset.UTC).plusMinutes(15)
+
+        PasswordResetTable.insert {
+            it[PasswordResetTable.userId] = userId
+            it[PasswordResetTable.code] = code
+            it[PasswordResetTable.expiresAt] = expiresAt
+            it[createdAt] = OffsetDateTime.now(ZoneOffset.UTC)
+        }
+
+        code
+    }
+
+    fun resetPassword(email: String, code: String, newPassword: String): Unit = transaction {
+        if (newPassword.length < 8) {
+            throw IllegalArgumentException("Password must be at least 8 characters")
+        }
+
+        val user = UserTable
+            .selectAll()
+            .where { UserTable.email eq email }
+            .firstOrNull() ?: throw UnauthorizedException("User not found")
+
+        val userId = user[UserTable.id]
+        val now = OffsetDateTime.now(ZoneOffset.UTC)
+
+        val resetRow = PasswordResetTable
+            .selectAll()
+            .where {
+                (PasswordResetTable.userId eq userId) and
+                (PasswordResetTable.code eq code) and
+                (PasswordResetTable.used eq false)
+            }
+            .firstOrNull() ?: throw UnauthorizedException("Invalid reset code")
+
+        if (resetRow[PasswordResetTable.expiresAt].toInstant().isBefore(now.toInstant())) {
+            throw UnauthorizedException("Reset code expired")
+        }
+
+        // Mark code as used
+        PasswordResetTable.update({ PasswordResetTable.id eq resetRow[PasswordResetTable.id] }) {
+            it[used] = true
+        }
+
+        // Update password
+        UserTable.update({ UserTable.id eq userId }) {
+            it[passwordHash] = PasswordHasher.hash(newPassword)
+            it[updatedAt] = now
+        }
+
+        // Invalidate all refresh tokens
         RefreshTokenTable.deleteWhere { RefreshTokenTable.userId eq userId }
     }
 

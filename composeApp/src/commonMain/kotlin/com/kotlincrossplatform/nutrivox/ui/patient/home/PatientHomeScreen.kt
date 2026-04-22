@@ -204,8 +204,6 @@ fun PatientHomeScreen(
                     }
                 }
 
-                // Space for bottom button
-                Spacer(Modifier.height(80.dp))
             }
         }
     }

@@ -8,6 +8,7 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.config.*
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
@@ -15,7 +16,7 @@ interface AIProvider {
     suspend fun complete(systemPrompt: String, userMessage: String): String
 }
 
-class AnthropicProvider(config: ApplicationConfig) : AIProvider {
+class OpenAIProvider(config: ApplicationConfig) : AIProvider {
     private val apiKey = config.property("ai.apiKey").getString()
     private val model = config.property("ai.model").getString()
 
@@ -28,37 +29,37 @@ class AnthropicProvider(config: ApplicationConfig) : AIProvider {
     override suspend fun complete(systemPrompt: String, userMessage: String): String {
         if (apiKey.isBlank()) return "[AI unavailable - no API key configured]"
 
-        val response = client.post("https://api.anthropic.com/v1/messages") {
-            header("x-api-key", apiKey)
-            header("anthropic-version", "2023-06-01")
+        val response = client.post("https://api.openai.com/v1/chat/completions") {
+            header("Authorization", "Bearer $apiKey")
             contentType(ContentType.Application.Json)
-            setBody(AnthropicRequest(
+            setBody(OpenAIRequest(
                 model = model,
-                max_tokens = 1024,
-                system = systemPrompt,
-                messages = listOf(AnthropicMessage("user", userMessage))
+                maxTokens = 1024,
+                messages = listOf(
+                    OpenAIMessage(role = "system", content = systemPrompt),
+                    OpenAIMessage(role = "user", content = userMessage)
+                )
             ))
         }
 
         val body = response.bodyAsText()
-        val parsed = Json { ignoreUnknownKeys = true }.decodeFromString<AnthropicResponse>(body)
-        return parsed.content.firstOrNull()?.text ?: "No response generated"
+        val parsed = Json { ignoreUnknownKeys = true }.decodeFromString<OpenAIResponse>(body)
+        return parsed.choices.firstOrNull()?.message?.content ?: "No response generated"
     }
 }
 
 @Serializable
-data class AnthropicRequest(
+data class OpenAIRequest(
     val model: String,
-    val max_tokens: Int,
-    val system: String,
-    val messages: List<AnthropicMessage>
+    @SerialName("max_tokens") val maxTokens: Int,
+    val messages: List<OpenAIMessage>
 )
 
 @Serializable
-data class AnthropicMessage(val role: String, val content: String)
+data class OpenAIMessage(val role: String, val content: String)
 
 @Serializable
-data class AnthropicResponse(val content: List<AnthropicContentBlock>)
+data class OpenAIResponse(val choices: List<OpenAIChoice>)
 
 @Serializable
-data class AnthropicContentBlock(val type: String, val text: String = "")
+data class OpenAIChoice(val message: OpenAIMessage)

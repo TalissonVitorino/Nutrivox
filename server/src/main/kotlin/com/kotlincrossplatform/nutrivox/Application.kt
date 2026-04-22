@@ -1,7 +1,7 @@
 package com.kotlincrossplatform.nutrivox
 
 import com.kotlincrossplatform.nutrivox.ai.AIService
-import com.kotlincrossplatform.nutrivox.ai.AnthropicProvider
+import com.kotlincrossplatform.nutrivox.ai.OpenAIProvider
 import com.kotlincrossplatform.nutrivox.ai.aiRoutes
 import com.kotlincrossplatform.nutrivox.auth.AuthService
 import com.kotlincrossplatform.nutrivox.auth.JwtConfig
@@ -35,6 +35,9 @@ fun Application.module() {
     configureStatusPages()
     configureAuthentication()
 
+    // Seed dev users (only in local environment)
+    seedDevUsers()
+
     // Config
     val jwtConfig = JwtConfig(
         secret = environment.config.property("jwt.secret").getString(),
@@ -53,7 +56,7 @@ fun Application.module() {
     val foodService = FoodService()
     val planService = PlanService()
     val consumptionService = ConsumptionService()
-    val aiProvider = AnthropicProvider(environment.config)
+    val aiProvider = OpenAIProvider(environment.config)
     val aiService = AIService(aiProvider)
 
     // Routes

@@ -80,10 +80,6 @@ fun PlanEditorScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp)
         ) {
-            Text("Editor de Plano", style = MaterialTheme.typography.headlineMedium)
-
-            Spacer(Modifier.height(16.dp))
-
             // Tags/chips
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 SuggestionChip(onClick = {}, label = { Text("Sem Gluten") })
@@ -230,7 +226,7 @@ fun PlanEditorScreen(
                             Spacer(Modifier.height(8.dp))
                             OutlinedButton(
                                 onClick = {},
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth().height(48.dp)
                             ) {
                                 Text("Buscar Ingrediente")
                             }
@@ -273,7 +269,7 @@ fun PlanEditorScreen(
             Spacer(Modifier.height(16.dp))
             OutlinedButton(
                 onClick = {},
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth().height(48.dp)
             ) {
                 Text("+ Adicionar Refeicao")
             }

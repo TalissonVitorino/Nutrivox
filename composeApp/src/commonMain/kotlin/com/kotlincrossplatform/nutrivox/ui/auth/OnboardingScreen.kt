@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 fun OnboardingScreen(
     inviteCode: String,
     viewModel: AuthViewModel,
-    onSuccess: () -> Unit,
+    onSuccess: (isNutritionist: Boolean) -> Unit,
     onBack: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {

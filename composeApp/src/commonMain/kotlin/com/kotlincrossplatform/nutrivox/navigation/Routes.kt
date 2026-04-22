@@ -1,25 +1,29 @@
 package com.kotlincrossplatform.nutrivox.navigation
 
-object Routes {
+import com.kotlincrossplatform.nutrivox.data.repository.MealResponse
+
+sealed class Screen {
     // Auth
-    const val LOGIN = "login"
-    const val ONBOARDING = "onboarding/{inviteCode}"
+    data object Login : Screen()
+    data object Register : Screen()
+    data object ForgotPassword : Screen()
+    data class Onboarding(val inviteCode: String) : Screen()
 
-    // Patient tabs
-    const val PATIENT_HOME = "patient/home"
-    const val PATIENT_PLAN_DETAIL = "patient/plan/{variationId}"
-    const val PATIENT_CONSUMPTION = "patient/consumption/{mealId}"
-    const val PATIENT_PROGRESS = "patient/progress"
-    const val PATIENT_CHAT = "patient/chat"
-    const val PATIENT_PROFILE = "patient/profile"
+    // Patient
+    data object PatientHome : Screen()
+    data class MealDetail(val meal: MealResponse) : Screen()
+    data class Consumption(val meal: MealResponse) : Screen()
+    data object Progress : Screen()
+    data object PatientChat : Screen()
+    data object PatientProfile : Screen()
 
-    // Nutritionist tabs
-    const val NUTRI_DASHBOARD = "nutri/dashboard"
-    const val NUTRI_PATIENTS = "nutri/patients"
-    const val NUTRI_PATIENT_DETAIL = "nutri/patient/{patientId}"
-    const val NUTRI_PLAN_EDITOR = "nutri/plan-editor/{patientId}/{planId}"
-    const val NUTRI_PLAN_PREVIEW = "nutri/plan-preview/{planId}"
-    const val NUTRI_CHAT = "nutri/chat/{patientId}"
-    const val NUTRI_SETTINGS = "nutri/settings"
-    const val NUTRI_ASSESSMENT = "nutri/assessment/{patientId}"
+    // Nutritionist
+    data object Dashboard : Screen()
+    data object PatientList : Screen()
+    data class PatientDetail(val patientId: String) : Screen()
+    data class PlanEditor(val patientId: String, val planId: String? = null) : Screen()
+    data class PlanPreview(val planId: String) : Screen()
+    data class NutriChat(val patientId: String) : Screen()
+    data object Settings : Screen()
+    data class Assessment(val patientId: String) : Screen()
 }

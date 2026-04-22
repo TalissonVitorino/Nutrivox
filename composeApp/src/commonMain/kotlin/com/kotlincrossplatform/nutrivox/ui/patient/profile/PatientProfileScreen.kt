@@ -28,10 +28,6 @@ fun PatientProfileScreen(
     ) {
         Spacer(Modifier.height(16.dp))
 
-        Text("Perfil", style = MaterialTheme.typography.headlineMedium)
-
-        Spacer(Modifier.height(24.dp))
-
         // Avatar placeholder
         Surface(
             modifier = Modifier.size(80.dp),
@@ -161,14 +157,13 @@ fun PatientProfileScreen(
         Spacer(Modifier.height(16.dp))
         Text("Vers\u00E3o 2.4.1", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
-        Spacer(Modifier.height(32.dp))
     }
 }
 
 @Composable
 private fun SettingsToggle(label: String, checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {

@@ -23,18 +23,6 @@ fun ProgressScreen(
             .verticalScroll(rememberScrollState())
             .padding(16.dp)
     ) {
-        Text(
-            "Evolucao e Metas",
-            style = MaterialTheme.typography.headlineMedium
-        )
-        Text(
-            "Acompanhamento Clinico",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-
-        Spacer(Modifier.height(16.dp))
-
         // Period selector
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             periods.forEach { period ->
@@ -204,7 +192,5 @@ fun ProgressScreen(
             }
         }
 
-        // Bottom spacing for nav bar
-        Spacer(Modifier.height(80.dp))
     }
 }

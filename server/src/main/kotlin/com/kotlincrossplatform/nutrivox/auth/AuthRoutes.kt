@@ -31,6 +31,18 @@ data class RefreshBody(
 )
 
 @Serializable
+data class ForgotPasswordBody(
+    val email: String
+)
+
+@Serializable
+data class ResetPasswordBody(
+    val email: String,
+    val code: String,
+    val newPassword: String
+)
+
+@Serializable
 data class TokenResponse(
     val accessToken: String,
     val refreshToken: String
@@ -74,6 +86,22 @@ fun Route.authRoutes(authService: AuthService) {
                     )
                 )
             )
+        }
+
+        post("/forgot-password") {
+            val body = call.receive<ForgotPasswordBody>()
+            val code = authService.requestPasswordReset(body.email)
+            if (code != null) {
+                call.application.environment.log.info("Password reset code for ${body.email}: $code")
+            }
+            // Always return success to avoid email enumeration
+            call.respond(ApiResponse.ok("If the email exists, a reset code has been sent"))
+        }
+
+        post("/reset-password") {
+            val body = call.receive<ResetPasswordBody>()
+            authService.resetPassword(body.email, body.code, body.newPassword)
+            call.respond(ApiResponse.ok("Password reset successfully"))
         }
 
         post("/refresh") {

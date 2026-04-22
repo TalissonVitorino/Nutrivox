@@ -28,6 +28,9 @@ fun Application.configureStatusPages() {
         exception<ConflictException> { call, cause ->
             call.respond(HttpStatusCode.Conflict, ApiResponse.error(cause.message ?: "Conflict"))
         }
+        exception<IllegalArgumentException> { call, cause ->
+            call.respond(HttpStatusCode.BadRequest, ApiResponse.error(cause.message ?: "Invalid input"))
+        }
         exception<Throwable> { call, cause ->
             call.application.environment.log.error("Unhandled exception", cause)
             call.respond(HttpStatusCode.InternalServerError, ApiResponse.error("Internal server error"))

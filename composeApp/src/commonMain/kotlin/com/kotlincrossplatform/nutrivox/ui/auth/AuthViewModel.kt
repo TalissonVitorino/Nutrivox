@@ -43,7 +43,7 @@ class AuthViewModel(private val authRepository: AuthRepository) {
         }
     }
 
-    fun acceptInvite(onSuccess: () -> Unit) {
+    fun acceptInvite(onSuccess: (isNutritionist: Boolean) -> Unit) {
         if (email.isBlank() || password.isBlank() || confirmPassword.isBlank()) {
             error = "Preencha todos os campos"
             return
@@ -64,10 +64,20 @@ class AuthViewModel(private val authRepository: AuthRepository) {
         error = null
         scope.launch {
             val result = authRepository.register(email, password, fullName, "patient")
-            isLoading = false
             result.fold(
-                onSuccess = { onSuccess() },
-                onFailure = { error = it.message ?: "Erro ao criar conta" }
+                onSuccess = {
+                    // Auto-login after registration
+                    val loginResult = authRepository.login(email, password)
+                    isLoading = false
+                    loginResult.fold(
+                        onSuccess = { onSuccess(TokenStorage.isNutritionist) },
+                        onFailure = { onSuccess(false) }
+                    )
+                },
+                onFailure = {
+                    isLoading = false
+                    error = it.message ?: "Erro ao criar conta"
+                }
             )
         }
     }

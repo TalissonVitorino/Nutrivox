@@ -49,9 +49,9 @@ fun PatientDetailScreen(
                 Spacer(Modifier.height(12.dp))
 
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedButton(onClick = onChat) { Text("Iniciar chat") }
-                    OutlinedButton(onClick = onNewAssessment) { Text("Nova aval.") }
-                    Button(onClick = onEditPlan) { Text("Editar plano") }
+                    OutlinedButton(onClick = onChat, modifier = Modifier.height(48.dp)) { Text("Iniciar chat") }
+                    OutlinedButton(onClick = onNewAssessment, modifier = Modifier.height(48.dp)) { Text("Nova aval.") }
+                    Button(onClick = onEditPlan, modifier = Modifier.height(48.dp)) { Text("Editar plano") }
                 }
 
                 Spacer(Modifier.height(12.dp))
@@ -164,13 +164,13 @@ private fun PlanosTab(onEditPlan: () -> Unit) {
             }
             Spacer(Modifier.height(8.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedButton(onClick = onEditPlan) { Text("Editar") }
-                OutlinedButton(onClick = {}) { Text("Visualizar") }
+                OutlinedButton(onClick = onEditPlan, modifier = Modifier.height(48.dp)) { Text("Editar") }
+                OutlinedButton(onClick = {}, modifier = Modifier.height(48.dp)) { Text("Visualizar") }
             }
         }
     }
     Spacer(Modifier.height(16.dp))
-    Button(onClick = {}, modifier = Modifier.fillMaxWidth()) { Text("+ Criar Novo Plano") }
+    Button(onClick = {}, modifier = Modifier.fillMaxWidth().height(48.dp)) { Text("+ Criar Novo Plano") }
 }
 
 @Composable
@@ -182,7 +182,7 @@ private fun ConsumoTab() {
 
 @Composable
 private fun InfoRow(label: String, value: String) {
-    Row(modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+    Row(modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp), horizontalArrangement = Arrangement.SpaceBetween) {
         Text(label, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Text(value, style = MaterialTheme.typography.bodyMedium)
     }
@@ -196,7 +196,7 @@ private fun ClinicalNoteCard(title: String, date: String, text: String) {
                 Text(title, style = MaterialTheme.typography.titleSmall)
                 Text(date, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
-            Spacer(Modifier.height(4.dp))
+            Spacer(Modifier.height(8.dp))
             Text(text, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }

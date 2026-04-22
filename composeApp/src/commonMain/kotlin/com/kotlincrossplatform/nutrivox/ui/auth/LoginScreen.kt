@@ -19,6 +19,7 @@ fun LoginScreen(
     viewModel: AuthViewModel,
     onLoginSuccess: (isNutritionist: Boolean) -> Unit,
     onForgotPassword: () -> Unit = {},
+    onRegister: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -147,7 +148,13 @@ fun LoginScreen(
             }
         }
 
-        Spacer(Modifier.height(24.dp))
+        Spacer(Modifier.height(16.dp))
+
+        TextButton(onClick = onRegister) {
+            Text("Nutricionista? Criar conta")
+        }
+
+        Spacer(Modifier.height(8.dp))
 
         // Footer
         Text(

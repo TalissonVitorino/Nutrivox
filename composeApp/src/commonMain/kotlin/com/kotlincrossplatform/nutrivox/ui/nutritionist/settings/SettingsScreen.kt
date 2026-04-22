@@ -25,10 +25,6 @@ fun SettingsScreen(
             .verticalScroll(rememberScrollState())
             .padding(16.dp)
     ) {
-        Text("Configuracoes", style = MaterialTheme.typography.headlineMedium)
-
-        Spacer(Modifier.height(20.dp))
-
         // Profile
         Card(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(16.dp)) {
@@ -144,7 +140,7 @@ fun SettingsScreen(
                     "Usar Face ID / Touch ID para abrir o aplicativo",
                     biometricEnabled
                 ) { biometricEnabled = it }
-                TextButton(onClick = {}) { Text("Tempo Limite da Sessao") }
+                TextButton(onClick = {}, modifier = Modifier.height(48.dp)) { Text("Tempo Limite da Sessao") }
             }
         }
 
@@ -155,11 +151,11 @@ fun SettingsScreen(
             Column(modifier = Modifier.padding(16.dp)) {
                 Text("Preferencias do Aplicativo", style = MaterialTheme.typography.titleMedium)
                 Spacer(Modifier.height(8.dp))
-                TextButton(onClick = {}, modifier = Modifier.fillMaxWidth()) {
+                TextButton(onClick = {}, modifier = Modifier.fillMaxWidth().height(48.dp)) {
                     Text("Notificacoes")
                 }
                 ToggleRow("Modo Escuro", "", darkMode) { darkMode = it }
-                TextButton(onClick = {}, modifier = Modifier.fillMaxWidth()) {
+                TextButton(onClick = {}, modifier = Modifier.fillMaxWidth().height(48.dp)) {
                     Text("Ajuda e Suporte")
                 }
             }
@@ -169,7 +165,7 @@ fun SettingsScreen(
 
         TextButton(
             onClick = onLogout,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().height(48.dp),
             colors = ButtonDefaults.textButtonColors(contentColor = Error)
         ) {
             Text("Sair")
@@ -189,7 +185,7 @@ fun SettingsScreen(
 
 @Composable
 private fun SettingField(label: String, value: String) {
-    Column(modifier = Modifier.padding(vertical = 4.dp)) {
+    Column(modifier = Modifier.padding(vertical = 6.dp)) {
         Text(
             label,
             style = MaterialTheme.typography.labelSmall,
@@ -207,7 +203,7 @@ private fun ToggleRow(
     onToggle: (Boolean) -> Unit
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
