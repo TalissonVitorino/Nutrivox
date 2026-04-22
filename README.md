@@ -66,4 +66,4 @@ Abra a pasta `/iosApp` no Xcode ou utilize a configuração de execução `iosAp
 - **Kotlin Multiplatform:** Compartilhamos o máximo de código possível, mantendo a performance nativa.
 
 ---
-Desenvolvido com ❤️ utilizando Kotlin e Compose Multiplatform.
+Desenvolvido com utilizando Kotlin e Compose Multiplatform.
