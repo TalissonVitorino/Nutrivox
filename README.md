@@ -1,95 +1,69 @@
-This is a Kotlin Multiplatform project targeting Android, iOS, Web, Desktop (JVM), Server.
+# 🍎 Nutrivox
 
-* [/composeApp](./composeApp/src) is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - [commonMain](./composeApp/src/commonMain/kotlin) is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    the [iosMain](./composeApp/src/iosMain/kotlin) folder would be the right place for such calls.
-    Similarly, if you want to edit the Desktop (JVM) specific part, the [jvmMain](./composeApp/src/jvmMain/kotlin)
-    folder is the appropriate location.
+O **Nutrivox** é uma plataforma completa de nutrição clínica desenvolvida com **Kotlin Multiplatform (KMP)**. O projeto integra o acompanhamento entre nutricionistas e pacientes com o suporte de uma **Inteligência Artificial assistiva** para sugestões alimentares e dúvidas nutricionais.
 
-* [/iosApp](./iosApp/iosApp) contains iOS applications. Even if you’re sharing your UI with Compose Multiplatform,
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
+## 🚀 Funcionalidades Principais
 
-* [/server](./server/src/main/kotlin) is for the Ktor server application.
+- **Para Pacientes:** Visualização de planos alimentares, registro de consumo, acompanhamento de metas (calorias/macros) e chat com IA.
+- **Para Nutricionistas:** Gestão de pacientes, criação de planos personalizados e acompanhamento da evolução clínica.
+- **IA Nutricional:** Sugestões inteligentes de substituições baseadas no perfil do paciente e respostas a dúvidas comuns de nutrição.
+- **Multiplataforma:** Suporte para Android, iOS, Web e Desktop utilizando Compose Multiplatform.
 
-* [/shared](./shared/src) is for the code that will be shared between all targets in the project.
-  The most important subfolder is [commonMain](./shared/src/commonMain/kotlin). If preferred, you
-  can add code to the platform-specific folders here too.
+## 🏗️ Estrutura do Projeto
 
-### Build and Run Android Application
+O repositório é organizado em uma arquitetura monorepo:
 
-To build and run the development version of the Android app, use the run configuration from the run widget
-in your IDE’s toolbar or build it directly from the terminal:
-- on macOS/Linux
-  ```shell
-  ./gradlew :composeApp:assembleDebug
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :composeApp:assembleDebug
-  ```
+*   [`/composeApp`](./composeApp): Código compartilhado da interface (UI) e lógica de apresentação para todas as plataformas clientes.
+*   [`/server`](./server): Backend desenvolvido em **Ktor** (Kotlin) com suporte a banco de dados PostgreSQL.
+*   [`/shared`](./shared): Lógica de negócio e modelos de dados compartilhados entre o App e o Servidor.
+*   [`/iosApp`](./iosApp): Aplicativo nativo iOS (entrada para o Compose Multiplatform).
+*   [`/docs`](./docs): Documentação detalhada, briefings de UI e especificações de requisitos.
 
-### Build and Run Desktop (JVM) Application
+## 🛠️ Configuração do Ambiente
 
-To build and run the development version of the desktop app, use the run configuration from the run widget
-in your IDE’s toolbar or run it directly from the terminal:
-- on macOS/Linux
-  ```shell
-  ./gradlew :composeApp:run
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :composeApp:run
-  ```
+### 1. Requisitos
+- Android Studio Koala ou superior.
+- Xcode (para rodar iOS).
+- JDK 17 ou superior.
+- Docker (opcional, para o banco de dados).
 
-### Build and Run Server
+### 2. Variáveis de Ambiente
+O projeto utiliza um arquivo `.env` para gerenciar chaves sensíveis. Existe um modelo chamado `.env.example` na raiz do projeto.
 
-To build and run the development version of the server, use the run configuration from the run widget
-in your IDE’s toolbar or run it directly from the terminal:
-- on macOS/Linux
-  ```shell
-  ./gradlew :server:run
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :server:run
-  ```
-
-### Build and Run Web Application
-
-To build and run the development version of the web app, use the run configuration from the run widget
-in your IDE's toolbar or run it directly from the terminal:
-- for the Wasm target (faster, modern browsers):
-  - on macOS/Linux
-    ```shell
-    ./gradlew :composeApp:wasmJsBrowserDevelopmentRun
+1.  Copie o exemplo:
+    ```bash
+    cp .env.example .env
     ```
-  - on Windows
-    ```shell
-    .\gradlew.bat :composeApp:wasmJsBrowserDevelopmentRun
-    ```
-- for the JS target (slower, supports older browsers):
-  - on macOS/Linux
-    ```shell
-    ./gradlew :composeApp:jsBrowserDevelopmentRun
-    ```
-  - on Windows
-    ```shell
-    .\gradlew.bat :composeApp:jsBrowserDevelopmentRun
-    ```
+2.  Preencha a sua `OPENAI_API_KEY` e outras configurações no arquivo `.env` recém-criado.
 
-### Build and Run iOS Application
+## 🖥️ Como Executar
 
-To build and run the development version of the iOS app, use the run configuration from the run widget
-in your IDE’s toolbar or open the [/iosApp](./iosApp) directory in Xcode and run it from there.
+### Backend (Server)
+```bash
+./gradlew :server:run
+```
+
+### Android
+```bash
+./gradlew :composeApp:assembleDebug
+```
+
+### Desktop (JVM)
+```bash
+./gradlew :composeApp:run
+```
+
+### Web (Wasm)
+```bash
+./gradlew :composeApp:wasmJsBrowserDevelopmentRun
+```
+
+### iOS
+Abra a pasta `/iosApp` no Xcode ou utilize a configuração de execução `iosApp` no Android Studio.
+
+## 🛡️ Segurança e Boas Práticas
+- **Chaves de API:** Nunca comite o arquivo `.env`. Ele já está incluído no `.gitignore`.
+- **Kotlin Multiplatform:** Compartilhamos o máximo de código possível, mantendo a performance nativa.
 
 ---
-
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html),
-[Compose Multiplatform](https://github.com/JetBrains/compose-multiplatform/#compose-multiplatform),
-[Kotlin/Wasm](https://kotl.in/wasm/)…
-
-We would appreciate your feedback on Compose/Web and Kotlin/Wasm in the public Slack channel [#compose-web](https://slack-chats.kotlinlang.org/c/compose-web).
-If you face any issues, please report them on [YouTrack](https://youtrack.jetbrains.com/newIssue?project=CMP).# Nutrivox
+Desenvolvido com ❤️ utilizando Kotlin e Compose Multiplatform.
